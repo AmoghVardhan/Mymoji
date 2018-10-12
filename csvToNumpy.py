@@ -5,6 +5,19 @@ from PIL import Image
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+'''
+for reference
+
+0=Angry
+1=Disgust
+2=Fear
+3=Happy
+4=Sad
+5=Surprise
+6=Neutral
+'''
+
+
 cascade_classifier = cv2.CascadeClassifier('./haarcascade_files/haarcascade_frontalface_default.xml')
 
 def o_h_e(x):
