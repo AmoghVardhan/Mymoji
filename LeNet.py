@@ -26,6 +26,8 @@ class LeNet:
         model.add(Dense(84,activation='relu'))
         model.add(Dense(7,activation='softmax'))
         model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
+        print(model.metrics_names)
+
         training = model.fit(self.train_data,self.train_label,validation_split=0.2,epochs=int(optEpoch))
         score = model.evaluate(self.test_data,self.test_label)
         return model,training,score
@@ -42,7 +44,7 @@ class LeNet:
 
     def plotParam(self,limit,thresh):
         x = np.arange(1,int(limit),1)
-        y = thresh
+        y = thresh        
         plt.plot(x,y)
         plt.show()
 
