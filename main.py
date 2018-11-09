@@ -60,8 +60,7 @@ def emotionFunc():
     HOST, PORT = "192.168.0.105", 27015
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
-    id = bytes(emotion,'utf-8')
-    s.send(id)
+    s.send(emotion)
     print( emotion)
 
 
@@ -92,24 +91,34 @@ print("Enter choice:")
 
 modelChosen = input()
 
-if modelChosen == "1" or modelChosen == "4":
+if modelChosen == "1":
     path1 = "Data/images.npy"
     path2 = "Data/labels.npy"
     size = 48
+    bar = 9813
+    barTest = 4205
 elif modelChosen=="2" or modelChosen =="3":
     path1 = "Data/images224.npy"
     path2 = "Data/labels224.npy"
     size = 224
+    bar = 9813
+    barTest =  4205
+elif modelChosen == "4":
+    bar = 25121
+    path1 = "Data/imagesCustom.npy"
+    path2 = "Data/labelsCustom.npy"
+    size = 48
+    barTest = 10766
 
 data = np.load(path1)
 label = np.load(path2)
 
-train_data = data[:9813]
-test_data = data[9813:]
-train_label = label[:9813]
-test_label = label[9813:]
-train_data = train_data.reshape(9813,size,size,1)
-test_data = test_data.reshape(4205,size,size,1)
+train_data = data[:bar]
+test_data = data[bar:]
+train_label = label[:bar]
+test_label = label[bar:]
+train_data = train_data.reshape(bar,size,size,1)
+test_data = test_data.reshape(barTest,size,size,1)
 obj = switchFunct(modelChosen)
 # obj = x(train_data,test_data,train_label,test_label)
 

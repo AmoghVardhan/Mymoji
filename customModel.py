@@ -59,17 +59,17 @@ class customModel :
 
     def saveModel(self,model):
         model_json = model.to_json()
-        with open("Models/LeNet-5.json","w") as json_file:
+        with open("Models/custom.json","w") as json_file:
             json_file.write(model_json)
-        model.save_weights("ModelWeights/LeNet-5__model.h5")
+        model.save_weights("ModelWeights/custom__model.h5")
         print("saved model to disk")
 
     def loadModel(self):
-        json_file = open("Models/LeNet-5.json","r")
+        json_file = open("Models/custom.json","r")
         loaded_model_json = json_file.read()
         json_file.close()
         loaded_model = model_from_json(loaded_model_json)
-        loaded_model.load_weights("ModelWeights/LeNet-5__model.h5")
+        loaded_model.load_weights("ModelWeights/custom__model.h5")
         print("loaded model from disk")
         return loaded_model
 

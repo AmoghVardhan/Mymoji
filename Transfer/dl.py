@@ -19,4 +19,4 @@ HOST, PORT = "192.168.0.105", 27015
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 s.connect((HOST, PORT))
-s.send(b'2')
+s.send(b'9')
