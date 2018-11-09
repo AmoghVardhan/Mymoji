@@ -118,9 +118,9 @@ class AlexNet:
 
     def saveModel(self,model):
         model_json = model.to_json()
-        with open("Models/AlexNet.json","w") as json_file:
+        with open("Models/AlexNet1.json","w") as json_file:
             json_file.write(model_json)
-        model.save_weights("ModelWeights/AlexNet__model.h5")
+        model.save_weights("ModelWeights/AlexNet__model1.h5")
         print("saved model to disk")
 
     def loadModel(self):

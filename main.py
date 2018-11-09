@@ -1,10 +1,13 @@
 import numpy as np
 import imageio
 import cv2
+import socket
+import sys
 from PIL import Image
 from LeNet import LeNet
 from AlexNet import AlexNet
 from VggNet import VggNet
+from customModel import customModel
 path1 = ""
 path2 = ""
 size = 1
@@ -14,6 +17,7 @@ def trainEvalFunc():
     limit = input()
     optEpoch = obj.findOptEpoch(limit)
     model,training,score = obj.train(optEpoch)
+    print(training)
     obj.evaluate(model)
     print('Do you want to save the model?(y or n)')
     ans = input()
@@ -51,6 +55,13 @@ def emotionFunc():
     testImg = image.reshape(1,48,48,1)
     model = obj.loadModel()
     emotion = model.predict_classes(testImg)[0]
+    # emotion = emotion.tobytes()
+    # print(type(emotion))
+    HOST, PORT = "192.168.0.105", 27015
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    id = bytes(emotion,'utf-8')
+    s.send(id)
     print( emotion)
 
 
@@ -64,7 +75,8 @@ def switchFunct(value):
     return{
         '1': lambda :LeNet(train_data,test_data,train_label,test_label),
         '2': lambda :AlexNet(train_data,test_data,train_label,test_label),
-        '3': lambda :VggNet(train_data,test_data,train_label,test_label)
+        '3': lambda :VggNet(train_data,test_data,train_label,test_label),
+        '4': lambda :customModel(train_data,test_data,train_label,test_label)
     }.get(value)()
 
 
@@ -75,12 +87,13 @@ print("Choose Model:")
 print("1.LeNet-5")
 print("2.AlexNet")
 print("3.VggNet")
+print("4.Custom Model")
 print("Enter choice:")
 
 modelChosen = input()
 
-if modelChosen == "1":
-    path1 = "Data/images.npy"    
+if modelChosen == "1" or modelChosen == "4":
+    path1 = "Data/images.npy"
     path2 = "Data/labels.npy"
     size = 48
 elif modelChosen=="2" or modelChosen =="3":

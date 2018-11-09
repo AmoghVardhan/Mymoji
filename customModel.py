@@ -1,13 +1,13 @@
 import numpy as np
 import	matplotlib.pyplot as plt
-from keras.layers import Dense
+from keras.layers import Dense, Dropout,Activation
 from keras.models import Sequential
 from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.models import model_from_json
 
-class LeNet:
+class customModel :
     def __init__(self,train_data,test_data,train_label,test_label):
         self.train_data = train_data
         self.test_data = test_data
@@ -17,13 +17,14 @@ class LeNet:
 
     def train(self,optEpoch):
         model = Sequential()
-        model.add(Conv2D(6,kernel_size=5,activation='relu',input_shape=(48,48,1)))
-        model.add(MaxPooling2D(pool_size=(2,2),padding = 'valid'))
-        model.add(Conv2D(16,kernel_size=5,activation='relu'))
-        model.add(MaxPooling2D(pool_size=2,padding = 'valid'))
+        model.add(Conv2D(64,kernel_size=5,activation='relu',input_shape=(48,48,1)))
+        model.add(MaxPooling2D(pool_size=3,strides = 2,padding = 'valid'))
+        model.add(Conv2D(64,kernel_size=5,activation='relu'))
+        model.add(MaxPooling2D(pool_size=3,strides = 2,padding = 'valid'))
+        model.add(Conv2D(128,kernel_size=4,activation='relu'))
+        model.add(Dropout(0.3))
         model.add(Flatten())
-        model.add(Dense(120,activation='relu'))
-        model.add(Dense(84,activation='relu'))
+        model.add(Dense(3072,activation='relu'))
         model.add(Dense(7,activation='softmax'))
         model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
         print(model.metrics_names)
@@ -33,19 +34,27 @@ class LeNet:
         return model,training,score
 
     def findOptEpoch(self,limit):
-        thresh=[]
         for i in range(1,int(limit)):
             model,training,score = self.train(i)
-            thresh.append(score[1])
-        self.plotParam(limit,thresh)
+        self.plotParam(training)
         print('Enter optEpoch value after visualization:')
         optEpoch = input()
         return optEpoch
 
-    def plotParam(self,limit,thresh):
-        x = np.arange(1,int(limit),1)
-        y = thresh
-        plt.plot(x,y)
+    def plotParam(self,training):
+        plt.plot(training.history['acc'])
+        plt.plot(training.history['val_acc'])
+        plt.title('Model Accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train','validation'],loc='upper left')
+        plt.show()
+        plt.plot(training.history['loss'])
+        plt.plot(training.history['val_loss'])
+        plt.title('Model Loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train','validation'],loc='upper left')
         plt.show()
 
     def saveModel(self,model):
