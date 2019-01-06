@@ -1,5 +1,7 @@
+ModelWeights/
 Data/
 *.ipynb
+*.h5
 check.py
 LeNet.cpython-36.pyc
-ModelWeights/
+
