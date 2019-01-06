@@ -6,6 +6,7 @@ from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.models import model_from_json
+from keras import optimizers
 
 class customModel :
     def __init__(self,train_data,test_data,train_label,test_label):
@@ -26,7 +27,8 @@ class customModel :
         model.add(Flatten())
         model.add(Dense(3072,activation='relu'))
         model.add(Dense(7,activation='softmax'))
-        model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
+        sgd = optimizers.SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+        model.compile(optimizer='sgd',loss='categorical_crossentropy',metrics=['accuracy'])
         print(model.metrics_names)
 
         training = model.fit(self.train_data,self.train_label,validation_split=0.2,epochs=int(optEpoch))

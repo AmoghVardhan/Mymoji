@@ -83,33 +83,33 @@ def detectFace(data):
     image = detectFaceUtil(image)
     return image
 
+if __name__ == "__main__":
+    data = pd.read_csv('./Data/fer2013.csv')
+    numImages = data.shape[0]
+    labels=[]
+    images=[]
 
-data = pd.read_csv('./Data/fer2013.csv')
-numImages = data.shape[0]
-labels=[]
-images=[]
+    index = 1
 
-index = 1
+    #imageData = data['pixels'].iloc[0]
 
-#imageData = data['pixels'].iloc[0]
+    for index,row in data.iterrows():
+        emotion = o_h_e(row['emotion'])
+        image = np.fromstring(str(row['pixels']),dtype=np.uint8,sep=' ').reshape(48,48)
+        mpl.image.imsave(('Data/original/'+str(index)+'.png'),image)
+        image = detectFace(row['pixels'])
+        #color reformat
+        #print(image.shape)
+        # newImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # mpl.image.imsave(('Data/ImageFolder/'+str(index)+'.png'),image)
+        if image is not None:
+            mpl.image.imsave(('Data/ImageFolder/'+str(index)+'.png'),image)
+            labels.append(emotion)
+            images.append(image)
 
-for index,row in data.iterrows():
-    emotion = o_h_e(row['emotion'])
-    image = np.fromstring(str(row['pixels']),dtype=np.uint8,sep=' ').reshape(48,48)
-    mpl.image.imsave(('Data/original/'+str(index)+'.png'),image)
-    image = detectFace(row['pixels'])
-    #color reformat
-    #print(image.shape)
-    # newImg = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # mpl.image.imsave(('Data/ImageFolder/'+str(index)+'.png'),image)
-    if image is not None:
-        mpl.image.imsave(('Data/ImageFolder/'+str(index)+'.png'),image)
-        labels.append(emotion)
-        images.append(image)
+        index+=1
+        total = numImages
+        print("Progress: {}/{} {:.2f}%".format(index,total,index * 100.0/total))
 
-    index+=1
-    total = numImages
-    print("Progress: {}/{} {:.2f}%".format(index,total,index * 100.0/total))
-
-np.save('./Data/images.npy',images)
-np.save('./Data/labels.npy',labels)
+    np.save('./Data/images.npy',images)
+    np.save('./Data/labels.npy',labels)

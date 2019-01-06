@@ -1,5 +1,5 @@
-ModelWeights/
 Data/
+ModelWeights/
 *.ipynb
 *.h5
 check.py

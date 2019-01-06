@@ -8,6 +8,8 @@ from LeNet import LeNet
 from AlexNet import AlexNet
 from VggNet import VggNet
 from customModel import customModel
+
+
 path1 = ""
 path2 = ""
 size = 1
@@ -43,27 +45,94 @@ def analyzeFunc():
     dispatch2[arg2]()
 
 def readImg():
-    # image = imageio.imread('sample.jpeg')
-    image = Image.open('sample.jpeg').convert('L')
-    # image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-    image = image.resize((48, 48), Image.ANTIALIAS)
-    return image
+    cascade_classifier = cv2.CascadeClassifier('./haarcascade_files/haarcascade_frontalface_default.xml')
+    print("Which image to load?")
+    imgLoad = input()
+    image = cv2.imread("testImages/"+imgLoad+".jpeg")
+    gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    faces = cascade_classifier.detectMultiScale(
+    gray,
+    scaleFactor=1.1,
+    minNeighbors=5,
+    minSize=(30, 30)
+)
+    if(len(faces)==0):
+        print("no faces detected")
+        exit(0)
+    max_area_face = faces[0]
+
+    #fx,fy,fw,fh
+    for face in faces:
+        if face[2] * face[3] > max_area_face[2] * max_area_face[3]:
+            max_area_face = face
+
+    #crop image
+    faces = max_area_face
+    print(faces)
+    x = faces[0]
+    y = faces[1]
+    w = faces[2]
+    h = faces[3]
+    cv2.rectangle(gray,(x,y),(x+w,y+h),(0,255,0),2)
+    cv2.namedWindow('faces found',cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('faces found',500,500)
+    cv2.imshow("faces found",gray)
+    k = cv2.waitKey(0)
+    if(k==27):
+        cv2.destroyAllWindows()
+    gray = gray[y:y+h,x:x+w]
+
+    print("Found {0} faces!".format(len(faces)))
+    gray = cv2.resize(gray, (48,48), interpolation = cv2.INTER_AREA)
+    return gray
+
+
+def emotionSwitch(argument):
+    switcher = {
+        0:"Angry",
+        1:"Disgust",
+        2:"Fear",
+        3:"Happy",
+        4:"Sad",
+        5:"Surprise",
+        6:"Neutral"
+    }
+    return switcher.get(argument, "Invalid expression")
+
+
+
 
 def emotionFunc():
     image = readImg()
     image = np.array(image)
-    testImg = image.reshape(1,48,48,1)
+    testImg = image.reshape(1,size,size,1)
     model = obj.loadModel()
     emotion = model.predict_classes(testImg)[0]
-    # emotion = emotion.tobytes()
+    print("\nEmotion Recognized:")
+    print(emotionSwitch(emotion)+"\n")
+    # emotionFunc() #comment this line for demo purpose
+
+    emotion = np.asscalar(np.int16(emotion))
     # print(type(emotion))
-    HOST, PORT = "192.168.0.105", 27015
+    # emotion = emotion.tobytes()
+    print(emotion)
+    HOST, PORT = "192.168.43.2", 27015
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
-    s.send(emotion)
-    print( emotion)
-
-
+    if emotion is 0:
+        s.send(b'0')
+    elif emotion is 1:
+        s.send(b'1')
+    elif emotion is 2:
+        s.send(b'2')
+    elif emotion is 3:
+        s.send(b'3')
+    elif emotion is 4:
+        s.send(b'4')
+    elif emotion is 5:
+        s.send(b'5')
+    elif emotion is 6:
+        s.send(b'6')
 dispatch1 = {
     "1":emotionFunc,
     "2":analyzeFunc,
@@ -85,13 +154,13 @@ print("\n\n\n\n----------Emotion Detection using DL----------")
 print("Choose Model:")
 print("1.LeNet-5")
 print("2.AlexNet")
-print("3.VggNet")
+print("3.VggNet(could not train. Please don't choose)")
 print("4.Custom Model")
 print("Enter choice:")
 
 modelChosen = input()
 
-if modelChosen == "1":
+if modelChosen == "1" or modelChosen == "4":
     path1 = "Data/images.npy"
     path2 = "Data/labels.npy"
     size = 48
@@ -103,12 +172,6 @@ elif modelChosen=="2" or modelChosen =="3":
     size = 224
     bar = 9813
     barTest =  4205
-elif modelChosen == "4":
-    bar = 25121
-    path1 = "Data/imagesCustom.npy"
-    path2 = "Data/labelsCustom.npy"
-    size = 48
-    barTest = 10766
 
 data = np.load(path1)
 label = np.load(path2)
